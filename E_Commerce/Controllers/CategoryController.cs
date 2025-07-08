@@ -20,5 +20,17 @@ namespace E_Commerce.Controllers
             var categories = dbContext.Categories.ToList();
             return Ok(categories);
         }
+        [HttpGet]
+        [Route("{id}")]
+        public IActionResult GetCategoryByid(int id) 
+        {
+            var categorybyid = dbContext.Categories.Find(id);
+            if (categorybyid == null)
+            {
+                return NotFound();
+            }
+            return Ok(categorybyid);
+
+        }
     }
 }
