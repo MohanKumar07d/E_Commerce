@@ -79,5 +79,23 @@ namespace E_Commerce.Controllers
             };
             return CreatedAtAction(nameof(GetCategoryByid), new { id = categorysDto.CategoryId }, categorysDto);
         }
+        [HttpPut]
+        [Route("{id}")]
+        public IActionResult Update([FromRoute] int id, [FromBody] UpdateCategoryRequestDto updateCategoryRequestDto)
+        {
+            var categoriesDomainModel = dbContext.Categories.FirstOrDefault(x => x.CategoryId == id);
+            if (categoriesDomainModel == null)
+            {
+                return NotFound();
+            }
+            categoriesDomainModel.CategoryName = updateCategoryRequestDto.CategoryName;
+            dbContext.SaveChanges();
+            var categorysDto = new categoryDto
+            {
+                CategoryId = categoriesDomainModel.CategoryId,
+                CategoryName = categoriesDomainModel.CategoryName
+            };
+            return Ok(categorysDto);
+        }
     }
 }
