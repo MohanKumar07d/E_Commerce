@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using E_Commerce.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Commerce.Controllers
@@ -7,10 +8,17 @@ namespace E_Commerce.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        [HttpGet]
-        public string GetCategories()
+        private readonly ECommerceContext dbContext;
+
+        public CategoryController(ECommerceContext dbContext)
         {
-            return "OK";
+            this.dbContext = dbContext;
+        }
+        [HttpGet]
+        public IActionResult GetCategories()
+        {
+            var categories = dbContext.Categories.ToList();
+            return Ok(categories);
         }
     }
 }
