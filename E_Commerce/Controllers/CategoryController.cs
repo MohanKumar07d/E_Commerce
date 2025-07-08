@@ -34,18 +34,18 @@ namespace E_Commerce.Controllers
             var categorysDto = new List<categoryDto>();
             foreach (var categoriesDomains in categoriesDomain)
             {
-              categorysDto.Add(new categoryDto()
-              {
-                  CategoryId = categoriesDomains.CategoryId,
-                  CategoryName = categoriesDomains.CategoryName
-              });
+                categorysDto.Add(new categoryDto()
+                {
+                    CategoryId = categoriesDomains.CategoryId,
+                    CategoryName = categoriesDomains.CategoryName
+                });
             }
             return Ok(categorysDto);
 
         }
         [HttpGet]
         [Route("{id}")]
-        public IActionResult GetCategoryByid(int id) 
+        public IActionResult GetCategoryByid(int id)
         {
             // var categorybyid = dbContext.Categories.Find(id);
             // var categorybyid = dbContext.Categories.FirstOrDefault(c => c.CategoryId == id);
@@ -89,6 +89,24 @@ namespace E_Commerce.Controllers
                 return NotFound();
             }
             categoriesDomainModel.CategoryName = updateCategoryRequestDto.CategoryName;
+            dbContext.SaveChanges();
+            var categorysDto = new categoryDto
+            {
+                CategoryId = categoriesDomainModel.CategoryId,
+                CategoryName = categoriesDomainModel.CategoryName
+            };
+            return Ok(categorysDto);
+        }
+        [HttpDelete]
+        [Route("{id}")]
+        public IActionResult Delete([FromRoute] int id)
+        {
+            var categoriesDomainModel = dbContext.Categories.FirstOrDefault(x => x.CategoryId == id);
+            if (categoriesDomainModel == null)
+            {
+                return NotFound();
+            }
+            dbContext.Categories.Remove(categoriesDomainModel);
             dbContext.SaveChanges();
             var categorysDto = new categoryDto
             {
