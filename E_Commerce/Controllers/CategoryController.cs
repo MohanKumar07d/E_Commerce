@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using E_Commerce.Models.Dto;
-
+using E_Commerce.Models;
 namespace E_Commerce.Controllers
 {
     [Route("api/[controller]")]
@@ -61,6 +61,23 @@ namespace E_Commerce.Controllers
             };
             return Ok(categoriesDomain);
 
+        }
+        [HttpPost]
+        public IActionResult Create([FromBody] AddCategoryRequestDto addCategoryRequestDto)
+        {
+            var categoriesDomainModel = new Category
+            {
+                CategoryId = addCategoryRequestDto.CategoryId,
+                CategoryName = addCategoryRequestDto.CategoryName
+            };
+            dbContext.Categories.Add(categoriesDomainModel);
+            dbContext.SaveChanges();
+            var categorysDto = new categoryDto
+            {
+                CategoryId = categoriesDomainModel.CategoryId,
+                CategoryName = categoriesDomainModel.CategoryName
+            };
+            return CreatedAtAction(nameof(GetCategoryByid), new { id = categorysDto.CategoryId }, categorysDto);
         }
     }
 }
