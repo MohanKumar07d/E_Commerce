@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using E_Commerce.Models.Dto;
 using E_Commerce.Models;
+using Microsoft.EntityFrameworkCore;
 namespace E_Commerce.Controllers
 {
     [Route("api/[controller]")]
@@ -16,9 +17,9 @@ namespace E_Commerce.Controllers
             this.dbContext = dbContext;
         }
         [HttpGet]
-        public IActionResult GetCategories()
+        public async Task<IActionResult> GetCategories()
         {
-            var categoriesDomain = dbContext.Categories.ToList();
+            var categoriesDomain = await dbContext.Categories.ToListAsync();
             /* var categoryNames = dbContext.Categories.Select(c => new 
              {
                  c.CategoryId,
@@ -45,11 +46,11 @@ namespace E_Commerce.Controllers
         }
         [HttpGet]
         [Route("{id}")]
-        public IActionResult GetCategoryByid(int id)
+        public async Task<IActionResult> GetCategoryByid(int id)
         {
             // var categorybyid = dbContext.Categories.Find(id);
             // var categorybyid = dbContext.Categories.FirstOrDefault(c => c.CategoryId == id);
-            var categoriesDomain = dbContext.Categories.FirstOrDefault(c => c.CategoryId == id);
+            var categoriesDomain = await dbContext.Categories.FirstOrDefaultAsync(c => c.CategoryId == id);
             if (categoriesDomain == null)
             {
                 return NotFound();
@@ -63,15 +64,15 @@ namespace E_Commerce.Controllers
 
         }
         [HttpPost]
-        public IActionResult Create([FromBody] AddCategoryRequestDto addCategoryRequestDto)
+        public async Task<IActionResult> Create([FromBody] AddCategoryRequestDto addCategoryRequestDto)
         {
             var categoriesDomainModel = new Category
             {
                 CategoryId = addCategoryRequestDto.CategoryId,
                 CategoryName = addCategoryRequestDto.CategoryName
             };
-            dbContext.Categories.Add(categoriesDomainModel);
-            dbContext.SaveChanges();
+            await dbContext.Categories.AddAsync(categoriesDomainModel);
+            await dbContext.SaveChangesAsync();
             var categorysDto = new categoryDto
             {
                 CategoryId = categoriesDomainModel.CategoryId,
@@ -81,15 +82,15 @@ namespace E_Commerce.Controllers
         }
         [HttpPut]
         [Route("{id}")]
-        public IActionResult Update([FromRoute] int id, [FromBody] UpdateCategoryRequestDto updateCategoryRequestDto)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCategoryRequestDto updateCategoryRequestDto)
         {
-            var categoriesDomainModel = dbContext.Categories.FirstOrDefault(x => x.CategoryId == id);
+            var categoriesDomainModel = await dbContext.Categories.FirstOrDefaultAsync(x => x.CategoryId == id);
             if (categoriesDomainModel == null)
             {
                 return NotFound();
             }
             categoriesDomainModel.CategoryName = updateCategoryRequestDto.CategoryName;
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
             var categorysDto = new categoryDto
             {
                 CategoryId = categoriesDomainModel.CategoryId,
@@ -99,15 +100,16 @@ namespace E_Commerce.Controllers
         }
         [HttpDelete]
         [Route("{id}")]
-        public IActionResult Delete([FromRoute] int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var categoriesDomainModel = dbContext.Categories.FirstOrDefault(x => x.CategoryId == id);
+            var categoriesDomainModel = await dbContext.Categories.FirstOrDefaultAsync(x => x.CategoryId == id);
             if (categoriesDomainModel == null)
             {
                 return NotFound();
             }
-            dbContext.Categories.Remove(categoriesDomainModel);
-            dbContext.SaveChanges();
+           dbContext.Categories.Remove(categoriesDomainModel);
+            // dbContext.Categories.Remove(categoriesDomainModel);
+            await dbContext.SaveChangesAsync();
             var categorysDto = new categoryDto
             {
                 CategoryId = categoriesDomainModel.CategoryId,
