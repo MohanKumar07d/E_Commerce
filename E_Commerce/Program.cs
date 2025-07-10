@@ -1,18 +1,27 @@
 using E_Commerce.Data;
-using Microsoft.EntityFrameworkCore;
+using E_Commerce.Mapping;
 using E_Commerce.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<ECommerceContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("E_CommerceConnectionString")));
+
+builder.Services.AddDbContext<ECommerceContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("E_CommerceConnectionString")));
 
 builder.Services.AddScoped<ICategoryRepository, SqlCategoryRepository>();
+
+// Register AutoMapper with the correct profile class name
+
+// error
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -23,9 +32,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
