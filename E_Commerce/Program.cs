@@ -20,6 +20,7 @@ builder.Services.AddScoped<ICategoryRepository, SqlCategoryRepository>();
 // Register AutoMapper with the correct profile class name
 
 // error
+builder.Services.AddAutoMapper(typeof(AutoMappingProfiles)); 
 
 
 var app = builder.Build();
