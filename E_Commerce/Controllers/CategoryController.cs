@@ -1,4 +1,5 @@
-﻿using E_Commerce.Data;
+﻿using AutoMapper;
+using E_Commerce.Data;
 using E_Commerce.Models;
 using E_Commerce.Models.Dto;
 using E_Commerce.Repositories;
@@ -14,11 +15,13 @@ namespace E_Commerce.Controllers
     {
         private readonly ECommerceContext dbContext;
         private readonly ICategoryRepository categoryRepository;
+        private readonly IMapper mapper;
 
-        public CategoryController(ECommerceContext dbContext,ICategoryRepository categoryRepository)
+        public CategoryController(ECommerceContext dbContext,ICategoryRepository categoryRepository,IMapper mapper)
         {
             this.dbContext = dbContext;
             this.categoryRepository = categoryRepository;
+            this.mapper = mapper;
         }
         [HttpGet]
         public async Task<IActionResult> GetCategories()
@@ -36,15 +39,16 @@ namespace E_Commerce.Controllers
                    c.CategoryName
                }).ToList();
                return Ok(categoriesDto);*/
-            var categorysDto = new List<categoryDto>();
-            foreach (var categoriesDomains in categoriesDomain)
-            {
-                categorysDto.Add(new categoryDto()
-                {
-                    CategoryId = categoriesDomains.CategoryId,
-                    CategoryName = categoriesDomains.CategoryName
-                });
-            }
+            //var categorysDto = new List<categoryDto>();
+            //foreach (var categoriesDomains in categoriesDomain)
+            //{
+            //    categorysDto.Add(new categoryDto()
+            //    {
+            //        CategoryId = categoriesDomains.CategoryId,
+            //        CategoryName = categoriesDomains.CategoryName
+            //    });
+            //}
+            var categorysDto = mapper.Map<List<categoryDto>>(categoriesDomain);
             return Ok(categorysDto);
 
         }
@@ -59,29 +63,32 @@ namespace E_Commerce.Controllers
             {
                 return NotFound();
             }
-            var categorysDto = new categoryDto
-            {
-                CategoryId = categoriesDomain.CategoryId,
-                CategoryName = categoriesDomain.CategoryName
-            };
+            //var categorysDto = new categoryDto
+            //{
+            //    CategoryId = categoriesDomain.CategoryId,
+            //    CategoryName = categoriesDomain.CategoryName
+            //};
+            var categorysDto = mapper.Map<categoryDto>(categoriesDomain);
             return Ok(categoriesDomain);
 
         }
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddCategoryRequestDto addCategoryRequestDto)
         {
-            var categoriesDomainModel = new Category
-            {
-                CategoryId = addCategoryRequestDto.CategoryId,
-                CategoryName = addCategoryRequestDto.CategoryName
-            };
-            categoriesDomainModel= await categoryRepository.CreateCategoryAsync(categoriesDomainModel);
+            //var categoriesDomainModel = new Category
+            //{
+            //    CategoryId = addCategoryRequestDto.CategoryId,
+            //    CategoryName = addCategoryRequestDto.CategoryName
+            //};
+            var categoriesDomainModel = mapper.Map<Category>(addCategoryRequestDto);
+            categoriesDomainModel =await categoryRepository.CreateCategoryAsync(categoriesDomainModel);
             //await dbContext.SaveChangesAsync();
-            var categorysDto = new categoryDto
-            {
-                CategoryId = categoriesDomainModel.CategoryId,
-                CategoryName = categoriesDomainModel.CategoryName
-            };
+            //var categorysDto = new categoryDto
+            //{
+            //    CategoryId = categoriesDomainModel.CategoryId,
+            //    CategoryName = categoriesDomainModel.CategoryName
+            //};
+            var categorysDto = mapper.Map<categoryDto>(categoriesDomainModel);
             return CreatedAtAction(nameof(GetCategoryByid), new { id = categorysDto.CategoryId }, categorysDto);
         }
 
@@ -91,11 +98,7 @@ namespace E_Commerce.Controllers
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCategoryRequestDto updateCategoryRequestDto)
         {
             
-            var categoriesDomainModel = new Category
-            {
-                CategoryId = id,
-                CategoryName = updateCategoryRequestDto.CategoryName
-            };
+            var categoriesDomainModel =mapper.Map<Category>(updateCategoryRequestDto);
             categoriesDomainModel = await categoryRepository.UpdateCategoryAsync(id, categoriesDomainModel);
 
             if (categoriesDomainModel == null)
@@ -104,11 +107,7 @@ namespace E_Commerce.Controllers
             }
            /* categoriesDomainModel.CategoryName = updateCategoryRequestDto.CategoryName;
             await dbContext.SaveChangesAsync();*/
-            var categorysDto = new categoryDto
-            {
-                CategoryId = categoriesDomainModel.CategoryId,
-                CategoryName = categoriesDomainModel.CategoryName
-            };
+            var categorysDto = mapper.Map<categoryDto>(categoriesDomainModel);  
             return Ok(categorysDto);
         }
 
@@ -125,13 +124,13 @@ namespace E_Commerce.Controllers
             }
           // dbContext.Categories.Remove(categoriesDomainModel);
             // dbContext.Categories.Remove(categoriesDomainModel);
-            await dbContext.SaveChangesAsync();
-            var categorysDto = new categoryDto
-            {
-                CategoryId = categoriesDomainModel.CategoryId,
-                CategoryName = categoriesDomainModel.CategoryName
-            };
-            return Ok(categorysDto);
+            //await dbContext.SaveChangesAsync();
+            //var categorysDto = new categoryDto
+            //{
+            //    CategoryId = categoriesDomainModel.CategoryId,
+            //    CategoryName = categoriesDomainModel.CategoryName
+            //};
+            return Ok(mapper.Map<categoryDto>(categoriesDomainModel));
         }
     }
 }
